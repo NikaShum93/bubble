@@ -1,4 +1,6 @@
+# Обновленный код для расширения, которое можно будет сгруппировать с картинкой
 
+html_code_updated = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,24 +35,32 @@
       width: 100%;
       height: 100%;
     }
+
+    .bubble {
+      position: absolute;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
 <div id="wrapper">
   <div id="bubble-label">🫧 Bubble by Nika Shum</div>
+  <!-- Здесь можно будет добавить картинку пузырька -->
+  <img src="" id="bubble-img" class="bubble" style="width: 50px; height: 50px; opacity: 0.5;">
 </div>
 
 <script>
   const label = document.getElementById('bubble-label');
   const wrapper = document.getElementById('wrapper');
+  const bubbleImg = document.getElementById('bubble-img');
 
   let x = window.innerWidth / 2;
   let y = window.innerHeight / 2;
 
-  // Default speed multiplier
-  let speed = 1.5 + Math.random() * 0.5; // Between 1.5 and 2
+  // Прочитаем скорость из атрибута title iframe
+  let speed = 1.5 + Math.random() * 0.5; // Default speed between 1.5 and 2
 
-  // Try to read speed from iframe alt attribute
+  // Попробуем получить скорость из alt или title атрибута
   try {
     const frames = window.parent.document.getElementsByTagName('iframe');
     for (let frame of frames) {
@@ -65,18 +75,26 @@
   let dy = (Math.random() * 2 - 1) * speed;
 
   function animate() {
-    x += dx;
-    y += dy;
+    // Получаем текущие координаты объекта, с которым сгруппировано расширение
+    const bubbleRect = bubbleImg.getBoundingClientRect();
+    const xCenter = bubbleRect.left + bubbleRect.width / 2;
+    const yCenter = bubbleRect.top + bubbleRect.height / 2;
 
-    // Bounce on edges
+    // Новые координаты для пузырька
+    x = xCenter + dx * 2;
+    y = yCenter + dy * 2;
+
+    // Ограничаем движение пузырька внутри экрана
     if (x <= 0 || x >= window.innerWidth) dx = -dx;
     if (y <= 0 || y >= window.innerHeight) dy = -dy;
 
-    wrapper.style.transform = `translate(${x - window.innerWidth / 2}px, ${y - window.innerHeight / 2}px)`;
+    // Применяем изменения к позиции пузырька
+    bubbleImg.style.transform = `translate(${x - bubbleRect.width / 2}px, ${y - bubbleRect.height / 2}px)`;
+
     requestAnimationFrame(animate);
   }
 
-  // Hide label when in presentation (not edit mode)
+  // Скрытие метки, когда находится в демонстрационном режиме
   window.addEventListener('load', () => {
     setTimeout(() => {
       if (window.self !== window.top) {
@@ -88,3 +106,11 @@
 </script>
 </body>
 </html>
+"""
+
+# Сохраняем файл
+file_path_updated = "/mnt/data/bubble_updated.html"
+with open(file_path_updated, "w") as f:
+    f.write(html_code_updated)
+
+file_path_updated
