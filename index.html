@@ -1,116 +1,61 @@
-# Обновленный код для расширения, которое можно будет сгруппировать с картинкой
-
-html_code_updated = """
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Bubble by Nika Shum</title>
+  <title>🧠 Пузырьки by Nika Shum</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      height: 100%;
-      background: transparent;
-    }
-
-    #bubble-label {
+    body { margin: 0; overflow: hidden; }
+    .bubble, .message, .global-on, .global-off {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: Arial, sans-serif;
-      font-size: 14px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: white;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 6px 12px;
-      border-radius: 12px;
-      pointer-events: none;
-      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
     }
-
-    #wrapper {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    .bubble {
-      position: absolute;
-      pointer-events: none;
-    }
+    .bubble { background: #3498db; }
+    .message { background: #2ecc71; display: none; }
+    .global-on { background: #27ae60; display: none; }
+    .global-off { background: #e74c3c; }
   </style>
 </head>
 <body>
-<div id="wrapper">
-  <div id="bubble-label">🫧 Bubble by Nika Shum</div>
-  <!-- Здесь можно будет добавить картинку пузырька -->
-  <img src="" id="bubble-img" class="bubble" style="width: 50px; height: 50px; opacity: 0.5;">
-</div>
+
+<div class="global-off">❌</div>
+<div class="global-on">✅</div>
+
+<div class="bubble" id="bubble1" style="top:50px;left:50px;">🫧</div>
+<div class="message" id="message1" style="top:150px;left:50px;">📜</div>
+
+<div class="bubble" id="bubble2" style="top:50px;left:150px;background:#9b59b6;">🫧</div>
+<div class="message" id="message2" style="top:150px;left:150px;background:#8e44ad;">📜</div>
 
 <script>
-  const label = document.getElementById('bubble-label');
-  const wrapper = document.getElementById('wrapper');
-  const bubbleImg = document.getElementById('bubble-img');
+const bubbles = document.querySelectorAll('.bubble');
+const messages = document.querySelectorAll('.message');
+const globalOn = document.querySelector('.global-on');
+const globalOff = document.querySelector('.global-off');
 
-  let x = window.innerWidth / 2;
-  let y = window.innerHeight / 2;
+let popped = 0;
 
-  // Прочитаем скорость из атрибута title iframe
-  let speed = 1.5 + Math.random() * 0.5; // Default speed between 1.5 and 2
+bubbles.forEach((bubble, index) => {
+  bubble.addEventListener('click', () => {
+    bubble.style.display = 'none';
+    messages[index].style.display = 'flex';
+    popped++;
 
-  // Попробуем получить скорость из alt или title атрибута
-  try {
-    const frames = window.parent.document.getElementsByTagName('iframe');
-    for (let frame of frames) {
-      if (frame.contentWindow === window && frame.title.includes('speed=')) {
-        const match = frame.title.match(/speed=([0-9.]+)/);
-        if (match) speed = parseFloat(match[1]);
-      }
+    if (popped === bubbles.length) {
+      globalOff.style.display = 'none';
+      globalOn.style.display = 'flex';
     }
-  } catch (e) {}
-
-  let dx = (Math.random() * 2 - 1) * speed;
-  let dy = (Math.random() * 2 - 1) * speed;
-
-  function animate() {
-    // Получаем текущие координаты объекта, с которым сгруппировано расширение
-    const bubbleRect = bubbleImg.getBoundingClientRect();
-    const xCenter = bubbleRect.left + bubbleRect.width / 2;
-    const yCenter = bubbleRect.top + bubbleRect.height / 2;
-
-    // Новые координаты для пузырька
-    x = xCenter + dx * 2;
-    y = yCenter + dy * 2;
-
-    // Ограничаем движение пузырька внутри экрана
-    if (x <= 0 || x >= window.innerWidth) dx = -dx;
-    if (y <= 0 || y >= window.innerHeight) dy = -dy;
-
-    // Применяем изменения к позиции пузырька
-    bubbleImg.style.transform = `translate(${x - bubbleRect.width / 2}px, ${y - bubbleRect.height / 2}px)`;
-
-    requestAnimationFrame(animate);
-  }
-
-  // Скрытие метки, когда находится в демонстрационном режиме
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      if (window.self !== window.top) {
-        label.style.display = 'none';
-      }
-    }, 500);
-    animate();
   });
+});
+
 </script>
 </body>
 </html>
-"""
-
-# Сохраняем файл
-file_path_updated = "/mnt/data/bubble_updated.html"
-with open(file_path_updated, "w") as f:
-    f.write(html_code_updated)
-
-file_path_updated
